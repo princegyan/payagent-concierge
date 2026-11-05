@@ -527,11 +527,7 @@ that judges can run.
 
 ## Licence
 
-Choose and add an open-source licence before making the repository
-public. For a permissive hackathon project, the MIT License is a common
-option. Add the full licence text in a root-level `LICENSE` file and
-update this section to match the licence actually selected.
-
+ MIT License 
 ------------------------------------------------------------------------
 
 ## A better way to shop
