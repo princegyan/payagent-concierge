@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+:root,
+html[data-theme="light"] {
+  color-scheme: light;
+  --background: #f7f8fa;
+  --foreground: #171b26;
+  --app-bg: #f7f8fa;
+  --header-bg: rgb(255 255 255 / 92%);
+  --surface: #ffffff;
+  --surface-muted: #f1f3f6;
+  --input-bg: #f8fafc;
+  --table-head: #f5f6f8;
+  --hover: #f1f4f8;
+  --border: #e5e8ee;
+  --border-soft: #edf0f4;
+  --border-strong: #cbd2dc;
+  --text-primary: #171b26;
+  --text-secondary: #586174;
+  --text-muted: #7b8495;
+  --text-faint: #9ba3b1;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --brand-mark-bg: #172033;
+  --brand-mark-fg: #ffffff;
+  --card-shadow: 0 1px 2px rgb(16 24 40 / 4%), 0 8px 24px rgb(16 24 40 / 3%);
+  --success-text: #047857;
+  --success-bg: #ecfdf5;
+  --success-border: #a7f3d0;
+  --danger-text: #b91c1c;
+  --danger-bg: #fef2f2;
+  --danger-border: #fecaca;
+  --warning-text: #a16207;
+  --warning-bg: #fffbeb;
+  --warning-border: #fde68a;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #0b0f19;
+  --foreground: #f3f5f9;
+  --app-bg: #0b0f19;
+  --header-bg: rgb(11 15 25 / 92%);
+  --surface: #121927;
+  --surface-muted: #1a2434;
+  --input-bg: #0d1420;
+  --table-head: #172132;
+  --hover: #1b2738;
+  --border: #263246;
+  --border-soft: #202c3e;
+  --border-strong: #3b4b63;
+  --text-primary: #f3f5f9;
+  --text-secondary: #c0c9d8;
+  --text-muted: #8995a8;
+  --text-faint: #667287;
+  --accent: #6d9cff;
+  --accent-hover: #8ab0ff;
+  --brand-mark-bg: #f3f5f9;
+  --brand-mark-fg: #111827;
+  --card-shadow: 0 1px 2px rgb(0 0 0 / 18%), 0 12px 30px rgb(0 0 0 / 12%);
+  --success-text: #6ee7b7;
+  --success-bg: rgb(16 185 129 / 10%);
+  --success-border: rgb(52 211 153 / 25%);
+  --danger-text: #fca5a5;
+  --danger-bg: rgb(239 68 68 / 10%);
+  --danger-border: rgb(248 113 113 / 25%);
+  --warning-text: #fcd34d;
+  --warning-bg: rgb(245 158 11 / 10%);
+  --warning-border: rgb(251 191 36 / 25%);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-montserrat);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  min-height: 100%;
+  background: var(--app-bg);
+}
+
+body {
+  min-height: 100%;
+  background: var(--app-bg);
+  color: var(--text-primary);
+  font-family: var(--font-montserrat), Montserrat, ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+::selection {
+  color: #ffffff;
+  background: #2563eb;
+}
