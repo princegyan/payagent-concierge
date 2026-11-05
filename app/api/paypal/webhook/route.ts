@@ -14,6 +14,7 @@ type JsonRecord = {
 type SupabaseConfig = {
   url: string;
   secretKey: string;
+  useLegacyBearer: boolean;
 };
 
 type LedgerOrder = {
@@ -68,13 +69,19 @@ function getSupabaseConfig(): SupabaseConfig {
   return {
     url: url.replace(/\/$/, ""),
     secretKey,
+    // New Supabase secret keys (sb_secret_...) are API keys, not JWTs.
+    // Send them in the apikey header only. Legacy service_role keys are JWTs
+    // and continue to use both apikey and Authorization: Bearer.
+    useLegacyBearer: !secretKey.startsWith("sb_secret_"),
   };
 }
 
 function supabaseHeaders(config: SupabaseConfig) {
   return {
     apikey: config.secretKey,
-    Authorization: `Bearer ${config.secretKey}`,
+    ...(config.useLegacyBearer
+      ? { Authorization: `Bearer ${config.secretKey}` }
+      : {}),
     "Content-Type": "application/json",
   };
 }
@@ -1315,11 +1322,21 @@ export async function POST(
       }
     }
 
-    return NextResponse.json(
-      {
-        error: message,
-      },
-      { status: 500 },
-    );
+    const isSignatureError =
+  message.includes("signature headers are missing") ||
+  message.includes("signature verification failed") ||
+  message.includes("Unsupported PayPal signature algorithm") ||
+  message.includes("certificate URL") ||
+  message.includes("signing certificate") ||
+  message.includes("signing certificate is not trusted");
+
+return NextResponse.json(
+  {
+    error: message,
+  },
+  {
+    status: isSignatureError ? 401 : 500,
+  },
+);
   }
 }
