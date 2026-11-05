@@ -511,7 +511,7 @@ cannot be confirmed.
 ## Project links
 
 -   **Live demo:** `<ADD_PUBLIC_DEMO_URL>`
--   **Source repository:** `<ADD_PUBLIC_REPOSITORY_URL>`
+-   **Source repository:** `<https://github.com/princegyan/payagent-concierge.git>`
 -   **Demo video:** `<ADD_PUBLIC_YOUTUBE_URL>`
 -   **Hackathon submission:** `<ADD_SUBMISSION_URL_IF_APPLICABLE>`
 
@@ -522,8 +522,8 @@ that judges can run.
 ## Team
 
 **Project:** PayAgent Concierge\
-**Team / builder:** `<ADD_TEAM_OR_BUILDER_NAME>`\
-**Contact:** `<ADD_PUBLIC_CONTACT_OR_TEAM_EMAIL>`
+**Team / builder:** `<Alfred Prince Gyan>`\
+**Contact:** `<princealfredgyan@gmail.com>`
 
 ## Licence
 
