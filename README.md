@@ -510,14 +510,10 @@ cannot be confirmed.
 
 ## Project links
 
--   **Live demo:** `<ADD_PUBLIC_DEMO_URL>`
-<<<<<<< HEAD
--   **Source repository:** `<ADD_PUBLIC_REPOSITORY_URL>`
-=======
+-   **Live demo:** `https://payagent-nine.vercel.app/>`
 -   **Source repository:** `<https://github.com/princegyan/payagent-concierge.git>`
 >>>>>>> c68bfc4f47aa0247449d28edd32fe8125878284e
 -   **Demo video:** `<ADD_PUBLIC_YOUTUBE_URL>`
--   **Hackathon submission:** `<ADD_SUBMISSION_URL_IF_APPLICABLE>`
 
 Replace these placeholders before submission. If no hosted demo is
 available, provide complete setup instructions and a public repository
@@ -527,24 +523,12 @@ that judges can run.
 
 **Project:** PayAgent Concierge\
 <<<<<<< HEAD
-**Team / builder:** `<ADD_TEAM_OR_BUILDER_NAME>`\
-**Contact:** `<ADD_PUBLIC_CONTACT_OR_TEAM_EMAIL>`
-
-## Licence
-
-Choose and add an open-source licence before making the repository
-public. For a permissive hackathon project, the MIT License is a common
-option. Add the full licence text in a root-level `LICENSE` file and
-update this section to match the licence actually selected.
-
-=======
 **Team / builder:** `<Alfred Prince Gyan>`\
 **Contact:** `<princealfredgyan@gmail.com>`
 
 ## Licence
 
  MIT License 
->>>>>>> c68bfc4f47aa0247449d28edd32fe8125878284e
 ------------------------------------------------------------------------
 
 ## A better way to shop
