@@ -498,7 +498,7 @@ async function createPayPalOrder(productName: string, amount: number, productId:
   const currency = "USD";
   const formattedAmount = amount.toFixed(2);
   const accessToken = await getPayPalAccessToken();
-  const appUrl = process.env.APP_URL || "https://payagent-concierge.vercel.app";
+  const appUrl = "https://payagent-concierge.vercel.app";
 
   const response = await fetch("https://api-m.sandbox.paypal.com/v2/checkout/orders", {
     method: "POST",
