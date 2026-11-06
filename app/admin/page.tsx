@@ -3,9 +3,12 @@
 
 import { FormEvent, useCallback, useState } from "react";
 import type { LucideIcon } from "lucide-react";
+import OrdersGrid from "./OrdersGrid";
+import PaymentTimeline from "./PaymentTimeline";
 import {
   Activity,
   AlertCircle,
+  CalendarClock,
   CheckCircle2,
   CreditCard,
   DollarSign,
@@ -30,6 +33,7 @@ type Order = {
   payment_status: string;
   session_id: string | null;
   created_at: string;
+  updated_at?: string | null;
 };
 
 type ActivityRecord = {
@@ -40,6 +44,7 @@ type ActivityRecord = {
   search_query: string | null;
   product_name: string | null;
   session_id: string | null;
+  paypal_order_id?: string | null;
   tool_name: string | null;
   error_message: string | null;
   created_at: string;
@@ -117,8 +122,7 @@ const DATE_RANGES: { value: DateRange; label: string }[] = [
   { value: "all", label: "All time" },
 ];
 
-type Tab = "orders" | "activity" | "webhooks";
-
+type Tab = "orders" | "activity" | "webhooks" | "timeline";
 function formatMoney(amount: number, currency: string) {
   try {
     return new Intl.NumberFormat("en-US", {
@@ -202,6 +206,7 @@ function MetricCard({
 
 const TABS: { id: Tab; label: string; icon: LucideIcon }[] = [
   { id: "orders", label: "Orders", icon: ShoppingBag },
+  { id: "timeline", label: "Payment Timeline", icon: CalendarClock },
   { id: "activity", label: "Activity", icon: FileText },
   { id: "webhooks", label: "Webhooks", icon: Webhook },
 ];
@@ -656,6 +661,18 @@ export default function AdminDashboardPage() {
 
           <div className="overflow-x-auto">
             {activeTab === "orders" && (
+  <OrdersGrid orders={data.recent_orders} />
+)}
+{activeTab === "timeline" && (
+  <PaymentTimeline
+    orders={data.recent_orders}
+    activity={data.recent_activity}
+    webhooks={data.recent_webhooks}
+    startAt={data.start_at}
+    endAt={data.end_at}
+  />
+)}
+            {/* {activeTab === "orders" && (
               <table className="w-full min-w-[850px] text-left text-xs">
                 <thead className="bg-white/[0.025] text-[10px] uppercase tracking-wider text-white/35">
                   <tr>
@@ -685,7 +702,7 @@ export default function AdminDashboardPage() {
                   ))}
                 </tbody>
               </table>
-            )}
+            )} */}
 
             {activeTab === "activity" && (
               <table className="w-full min-w-[750px] text-left text-xs">
@@ -758,14 +775,18 @@ export default function AdminDashboardPage() {
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.07] px-5 py-3 text-[11px] text-white/35">
             <span>
-              Showing{" "}
-              {activeTab === "orders"
-                ? data.counts.recent_orders
-                : activeTab === "activity"
-                  ? data.counts.recent_activity
-                  : data.counts.recent_webhooks}{" "}
-              recent records
-            </span>
+  Showing{" "}
+  {activeTab === "orders"
+    ? data.counts.recent_orders
+    : activeTab === "activity"
+      ? data.counts.recent_activity
+      : activeTab === "webhooks"
+        ? data.counts.recent_webhooks
+        : data.recent_orders.length +
+          data.recent_activity.length +
+          data.recent_webhooks.length}{" "}
+  recent records
+</span>
             <span>Latest 10 · Read-only view</span>
           </div>
         </section>
