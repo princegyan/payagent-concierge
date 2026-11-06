@@ -2,114 +2,122 @@
 
 ### Shop through a conversation. Compare real offers. Pay with confidence.
 
-PayAgent Concierge is an AI-powered shopping and checkout assistant that
-turns a natural-language shopping request into a guided commerce
-journey. Customers describe what they need, explore product results,
-compare merchant offers, choose a specific listing and continue to
-PayPal Checkout---without handing payment authority to the AI.
+PayAgent Concierge is an AI-powered shopping and checkout assistant.
+Customers describe what they need in natural language, explore product
+results, compare merchant offers, select a specific listing and continue
+to PayPal Checkout. The AI assists with shopping, but the customer
+remains in control of payment approval.
 
-> **Hackathon build:** PayPal Sandbox · Groq AI · Channel3 product
-> intelligence · Supabase audit and order ledger
+**Hackathon build:** PayPal Sandbox · Groq AI · Channel3 product
+intelligence · Supabase audit and order ledger · AG Grid · Bryntum
+Scheduler
+
+-   **Live application:** https://payagent-concierge.vercel.app
+-   **Source repository:**
+    https://github.com/princegyan/payagent-concierge
+-   **Demo video:** Add the public YouTube URL here (under 3 minutes).
 
 ------------------------------------------------------------------------
 
 ## The problem
 
-Online shopping is fragmented. Customers often have to translate an idea
-into search terms, visit multiple stores, compare listings that may not
-represent the same product, verify whether an offer is still available
-and then complete checkout on a separate site.
-
-That process is time-consuming and makes it easy to compare unlike
-products or act on stale pricing.
+Online shopping is fragmented. Customers translate ideas into search
+terms, visit multiple stores, compare listings that may not represent
+the same product, verify offer availability and complete checkout
+separately. This takes time and can lead to comparing unlike products or
+relying on stale prices.
 
 ## Our solution
 
 PayAgent Concierge brings product discovery, comparison and payment
-preparation into one conversational interface.
-
-A customer can ask for a product in everyday language, refine the
-request with follow-up constraints such as a budget or preferred
-merchant, inspect product information and select a specific offer.
-Before checkout, the server re-queries the product provider to verify
-the selected product and merchant offer. It then creates a PayPal order
-for the verified amount and sends the customer to PayPal to review and
-approve payment.
+preparation into one conversational interface. Customers can refine
+requests with a budget, preferred merchant or required features. Before
+checkout, the server re-queries Channel3 to verify the selected product
+and merchant offer, then creates a PayPal order using the verified
+amount.
 
 **The AI assists with shopping; the customer remains in control of
 payment approval.**
 
-## Why it matters
+## Features and functionality
 
--   **Less search friction:** start with a natural-language request
-    instead of manually constructing filters.
--   **More useful comparisons:** compare merchant offers and distinguish
-    genuine same-product comparisons from unrelated listings.
--   **Safer checkout preparation:** the server verifies the selected
-    offer again rather than trusting a price supplied by the browser.
--   **Clear payment state:** an order being created is not represented
-    as a completed payment.
--   **Operational visibility:** an administrator can inspect orders, AI
-    activity and webhook records through a protected dashboard.
+### Conversational AI shopping
 
-------------------------------------------------------------------------
+-   Uses Groq (`openai/gpt-oss-120b`) to interpret natural-language
+    product requests.
+-   Supports follow-up instructions and shopping constraints.
+-   Converts shopping intent into structured search criteria.
 
-## Product capabilities
+### Product discovery and merchant comparison
 
-  -----------------------------------------------------------------------
-  Capability                          What it does
-  ----------------------------------- -----------------------------------
-  Conversational shopping             Uses Groq-powered intent parsing to
-                                      interpret product requests and
-                                      follow-up instructions.
+-   Searches Channel3 for structured product, image, feature, variant
+    and merchant-offer data.
+-   Supports budget, merchant, required-feature and price-sort
+    constraints.
+-   Only describes offers as the same-product comparison when Channel3
+    returns a shared canonical product ID.
 
-  Product discovery                   Searches Channel3 for structured
-                                      product, image, feature, variant
-                                      and merchant-offer data.
+### Offer re-verification and PayPal Checkout
 
-  Product filtering                   Supports budget, merchant,
-                                      required-feature and price-sort
-                                      constraints.
+-   Re-queries Channel3 immediately before creating a PayPal order.
+-   Derives the checkout amount from the freshly verified offer on the
+    server, not from a client-submitted price.
+-   Creates PayPal Orders API orders in the Sandbox environment.
+-   Sends the customer to PayPal to review and approve the transaction.
+-   Captures an approved order through a server-side endpoint.
+-   Current checkout scope is USD only; the application does not
+    silently convert currencies.
 
-  Merchant comparison                 Summarises merchant offers and only
-                                      labels a comparison as the same
-                                      product when the provider returns a
-                                      shared canonical product ID.
+### Audit, order ledger and admin dashboard
 
-  Offer re-verification               Re-queries Channel3 immediately
-                                      before creating a PayPal order.
+-   Persists commerce activity, order records and PayPal webhook event
+    records in Supabase.
+-   Provides protected admin endpoints using a Bearer token.
+-   Displays dashboard summaries and recent orders, activity and webhook
+    records.
+-   Supports date-range filters.
+-   Admin views are read-only operational interfaces.
 
-  PayPal Checkout                     Creates PayPal Orders API orders
-                                      using the verified offer amount and
-                                      redirects the customer to PayPal
-                                      approval.
+### AG Grid --- interactive Orders table
 
-  Payment capture                     Captures an approved PayPal order
-                                      through a server-side endpoint.
+The admin **Orders** view uses **AG Grid Community**
+(`ag-grid-community` and `ag-grid-react`) to make payment records easier
+to inspect.
 
-  Audit and order ledger              Persists commerce activity, order
-                                      records and payment states in
-                                      Supabase.
+-   Sortable columns.
+-   Column filtering and floating filters.
+-   Quick search across displayed order data.
+-   Pagination with page sizes of 10, 20 or 50 rows.
+-   Stable row identity for consistent grid updates.
 
-  Admin dashboard                     Provides protected operational
-                                      summaries and recent order,
-                                      activity and webhook records, with
-                                      date-range filtering.
-  -----------------------------------------------------------------------
+AG Grid is used as a functional operational data table, not as a static
+visual. It gives administrators practical tools to find and inspect
+order records.
+
+### Bryntum Scheduler --- Payment Timeline
+
+The admin **Payment Timeline** view uses **Bryntum Scheduler Community**
+(`@bryntum/scheduler-community` and
+`@bryntum/scheduler-react-community`) to visualise recorded payment
+operations over time.
+
+-   Brings together PayPal order records, agent activity events and
+    PayPal webhook events.
+-   Uses recorded timestamps.
+-   Associates activity and webhook events with an order only when an
+    exact PayPal order ID match is available.
+-   Keeps events that cannot be reliably matched in separate groups.
+-   Remains read-only and does not invent event durations or change
+    payment state.
+
+This gives administrators a chronological view of payment operations
+alongside the tabular Orders view.
 
 ### Current payment environment
 
 The current implementation is configured for **PayPal Sandbox** and
-**USD checkout**. It does not silently convert other currencies. Sandbox
-transactions are for demonstration and testing, not real-money
-settlement.
-
-### AI and agentic behaviour
-
-The AI interprets customer intent and helps coordinate the shopping
-journey. It does not independently authorise or execute a payment. A
-selected product is re-verified by the server and the customer must
-approve the PayPal order on PayPal.
+**USD checkout**. Sandbox transactions are for demonstration and
+testing, not real-money settlement.
 
 ------------------------------------------------------------------------
 
@@ -121,23 +129,25 @@ flowchart TD
     B --> C[Groq intent parsing]
     C --> D[Channel3 product search]
     D --> E[Filter and compare structured offers]
-    E --> F[Customer selects a product and merchant]
-    F --> G[Server re-verifies selected offer with Channel3]
+    E --> F[Customer selects product and merchant]
+    F --> G[Server re-verifies selected offer]
     G --> H[Create PayPal Sandbox order]
-    H --> I[Customer reviews and approves on PayPal]
+    H --> I[Customer approves on PayPal]
     I --> J[Server captures approved order]
-    J --> K[Update Supabase order ledger and audit trail]
+    J --> K[Supabase order ledger and audit trail]
     K --> L[Protected admin dashboard]
+    L --> M[AG Grid Orders table]
+    L --> N[Bryntum Payment Timeline]
 ```
 
-### Technology stack
+## Technology stack
 
   -------------------------------------------------------------------------
   Layer                   Technology                Responsibility
   ----------------------- ------------------------- -----------------------
-  Web application         Next.js App Router,       Customer experience and
-                          React, TypeScript,        server routes
-                          Tailwind CSS              
+  Web application         Next.js App Router,       Customer experience,
+                          React, TypeScript,        admin interface and
+                          Tailwind CSS              server routes
 
   AI                      Groq SDK                  Natural-language intent
                           (`openai/gpt-oss-120b`)   extraction
@@ -151,25 +161,36 @@ flowchart TD
                                                     capture
 
   Data and audit          Supabase (Postgres + REST Order ledger, activity
-                          API)                      logs, webhook event
-                                                    records and dashboard
-                                                    summaries
+                          API)                      logs, webhook events
+                                                    and dashboard summaries
 
-  Admin interface         Next.js, React, Lucide,   Operational monitoring
-                          AG Grid dependencies      
+  Admin data grid         AG Grid Community         Sortable, filterable,
+                                                    searchable and
+                                                    paginated Orders table
+
+  Admin timeline          Bryntum Scheduler         Read-only chronological
+                          Community                 payment operations
+                                                    timeline
+
+  Hosting                 Vercel                    Hosted Next.js
+                                                    application
   -------------------------------------------------------------------------
+
+Both AG Grid and Bryntum are integrated into the admin dashboard and
+operate on application data. The project uses their Community packages;
+refer to the vendors' licensing terms and the hackathon sponsor terms
+for applicable conditions.
 
 ------------------------------------------------------------------------
 
-## Architecture and important trust boundaries
+## Architecture and trust boundaries
 
-PayAgent is designed so that the browser is not the authority for prices
-or payment status.
+The browser is not the authority for prices or payment status.
 
 1.  **Intent:** the customer message is sent to the Next.js chat
     endpoint. The server uses Groq to interpret the request.
-2.  **Discovery:** the server queries Channel3 and normalises the
-    returned catalogue and offer data.
+2.  **Discovery:** the server queries Channel3 and normalises catalogue
+    and offer data.
 3.  **Selection:** the customer chooses a specific product and merchant
     offer.
 4.  **Verification:** the server queries Channel3 again and validates
@@ -181,13 +202,14 @@ or payment status.
     approve the order.
 7.  **Capture:** the server calls PayPal to capture the approved order
     and records the result in Supabase.
-8.  **Operations:** protected admin endpoints read the audit and order
-    data for the dashboard.
+8.  **Operations:** protected admin endpoints read audit and order data.
+    AG Grid presents order records; Bryntum Scheduler visualises
+    recorded events.
 
-**Security design choices**
+### Security design choices
 
--   API credentials are server-side environment variables; they must
-    never be exposed in client-side code.
+-   API credentials are server-side environment variables and must never
+    be exposed in client-side code.
 -   The admin dashboard API requires a Bearer token.
 -   The order ledger and activity log tables have Row Level Security
     enabled and direct `anon`/`authenticated` table access revoked in
@@ -197,12 +219,13 @@ or payment status.
     verification.
 -   The customer approves payment on PayPal; creating an order is not
     the same as capturing payment.
+-   AG Grid and Bryntum views are read-only.
 
-> **Important:** The project is a hackathon prototype. Before production
-> use, complete a security review of the current capture and webhook
-> routes, validate PayPal webhook signature verification and
-> duplicate-event handling, add rate limiting and abuse protection, and
-> conduct end-to-end failure/reconciliation tests.
+> **Prototype notice:** Before production use, complete a security
+> review of the capture and webhook routes, validate PayPal webhook
+> signature verification and duplicate-event handling, add rate limiting
+> and abuse protection, and conduct end-to-end failure and
+> reconciliation tests.
 
 ------------------------------------------------------------------------
 
@@ -211,25 +234,18 @@ or payment status.
 ### Prerequisites
 
 -   Node.js **20.9 or newer**
--   npm
+-   npm and Git
 -   A Supabase project
 -   A Groq API key
 -   A Channel3 API key
--   PayPal Developer account and Sandbox REST app credentials
--   Git
+-   A PayPal Developer account and Sandbox REST app credentials
 
 ### 1. Clone the repository
 
-Replace the placeholder with the public repository URL used for the
-submission:
-
 ``` bash
-git clone <YOUR_PUBLIC_REPOSITORY_URL>
+git clone https://github.com/princegyan/payagent-concierge.git
 cd payagent-concierge
 ```
-
-If the repository directory has a different name, change into that
-directory instead.
 
 ### 2. Install dependencies
 
@@ -237,9 +253,13 @@ directory instead.
 npm install
 ```
 
+This installs the application dependencies, including the AG Grid and
+Bryntum Community packages used by the admin dashboard.
+
 ### 3. Configure environment variables
 
-Create a file named `.env.local` in the project root.
+Create `.env.local` in the project root. Add your own credentials
+locally; do not commit this file.
 
 ``` env
 # Groq — AI intent parsing
@@ -253,22 +273,20 @@ PAYPAL_CLIENT_ID=
 PAYPAL_CLIENT_SECRET=
 PAYPAL_WEBHOOK_ID=
 
-# Public base URL used for PayPal return/cancel URLs
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-
 # Supabase server-side access
 SUPABASE_URL=
 SUPABASE_SECRET_KEY=
 
 # Admin dashboard access — use a long, random ASCII token
 PAYAGENT_ADMIN_TOKEN=
+
+# Application base URL
+APP_URL=http://localhost:3000
 ```
 
-**Do not commit `.env.local`.** Do not paste credentials into issues,
-screenshots, demo recordings or public chat. Use the server-side
-Supabase secret key. If your Supabase project still uses the legacy
-service-role key, the backend supports `SUPABASE_SERVICE_ROLE_KEY` as an
-alternative to `SUPABASE_SECRET_KEY`; use only one.
+If your Supabase project still uses the legacy service-role key, the
+backend supports `SUPABASE_SERVICE_ROLE_KEY` as an alternative to
+`SUPABASE_SECRET_KEY`; use only one.
 
 Generate a strong admin token in Git Bash or a terminal with Node.js:
 
@@ -280,64 +298,67 @@ Copy the generated value into `PAYAGENT_ADMIN_TOKEN`. Use only ASCII
 characters. Restart the development server after changing environment
 variables.
 
+**Deployment note:** For a hosted deployment, the PayPal return and
+cancellation URLs must use the deployed HTTPS domain, never `localhost`.
+Confirm this with a newly created Sandbox order after deployment or
+environment changes.
+
 ### 4. Configure Supabase
 
 Create or use a Supabase project and copy its project URL and
 server-side secret key into `.env.local`.
 
-Run the database SQL in the Supabase SQL Editor, in this order:
-
-1.  **Audit and order ledger schema** --- creates `agent_activity_logs`,
-    `payagent_orders`, the append-only audit trigger, indexes and access
-    controls.
-2.  **Webhook event schema** --- creates
-    `payagent_paypal_webhook_events` and its indexes/access controls.
-3.  **Admin dashboard summary functions** --- creates the summary RPC
-    used by the dashboard.
-4.  **Date-range summary function overload** --- adds the `p_start_at`
-    and `p_end_at` summary function used by dashboard date filters.
-
-The project history includes the audit migration named
-`202611030001_payagent_audit_ledger.sql` and the dashboard migration
-named `202611040001_payagent_admin_dashboard.sql`. The dashboard SQL was
-also applied directly in the Supabase SQL Editor during development.
-Ensure the corresponding SQL is included in the public repository under
-a clearly documented `supabase/migrations/` or `database/` directory
-before submission; do not assume a migration file exists just because it
-was executed in the hosted database.
-
-The backend expects these tables:
+The application expects these tables:
 
 -   `public.agent_activity_logs`
 -   `public.payagent_orders`
 -   `public.payagent_paypal_webhook_events`
 
-It also expects the RPC function:
+It also expects these functions:
 
 -   `public.payagent_admin_dashboard_summary()`
 -   `public.payagent_admin_dashboard_summary(p_start_at timestamptz, p_end_at timestamptz)`
 
-The admin summary function should be executable by `service_role` only.
+Run the database SQL in the Supabase SQL Editor in this order:
+
+1.  Audit and order ledger schema --- creates `agent_activity_logs`,
+    `payagent_orders`, the append-only audit trigger, indexes and access
+    controls.
+2.  Webhook event schema --- creates `payagent_paypal_webhook_events`
+    and its indexes/access controls.
+3.  Admin dashboard summary functions.
+4.  Date-range summary function overload used by dashboard date filters.
+
+The development history includes migrations named
+`202611030001_payagent_audit_ledger.sql` and
+`202611040001_payagent_admin_dashboard.sql`. Before submission, ensure
+all SQL required for a fresh database setup is committed in the public
+repository and that this README identifies the exact file paths and
+execution order. SQL applied manually in a hosted Supabase project is
+not automatically present in a fresh clone.
+
+The admin summary functions should be executable by `service_role` only.
 Do not grant browser roles access to the audit or order ledger.
 
 ### 5. Configure PayPal Sandbox
 
-1.  Sign in to the PayPal Developer Dashboard.
+1.  Sign in to the [PayPal Developer
+    Dashboard](https://developer.paypal.com/dashboard/).
 2.  Create or select a Sandbox REST application.
 3.  Copy its Client ID and Secret into `.env.local`.
-4.  Set the application to the Sandbox environment used by the project.
-5.  Configure the webhook endpoint URL for the deployed application if
-    testing real webhook delivery.
+4.  Use the Sandbox environment for testing.
+5.  For live webhook testing, configure the webhook endpoint as
+    `https://YOUR_DEPLOYED_DOMAIN/api/paypal/webhook`.
 6.  Subscribe to the PayPal event types handled by the current webhook
     implementation.
 7.  Store the webhook ID in `PAYPAL_WEBHOOK_ID`.
 
 For local webhook testing, expose the local application through a secure
 development tunnel and configure the resulting HTTPS endpoint in the
-PayPal Developer Dashboard. Do not describe simulator-generated events
-as proof of live PayPal webhook delivery.
+PayPal Developer Dashboard. Simulator-generated events are not proof of
+live PayPal webhook delivery.
 
-### 6. Start the application
+### 6. Run the application locally
 
 ``` bash
 npm run dev
@@ -345,28 +366,52 @@ npm run dev
 
 Open:
 
--   Customer application: <http://localhost:3000>
--   Admin dashboard: <http://localhost:3000/admin>
+-   Customer application: http://localhost:3000
+-   Admin dashboard: http://localhost:3000/admin
 
 Enter the `PAYAGENT_ADMIN_TOKEN` value on the admin login screen.
 
-### 7. Production build check
-
-Before deploying or submitting, run:
+### 7. Create a production build
 
 ``` bash
 npm run build
 ```
 
-Resolve all build and TypeScript errors before recording the demo.
+Resolve all build and TypeScript errors before deploying or recording
+the demo.
+
+------------------------------------------------------------------------
+
+## Admin dashboard guide
+
+The admin dashboard is available at `/admin` and requires the admin
+Bearer token.
+
+### Orders --- AG Grid
+
+-   Use quick search to find records.
+-   Sort columns to organise results.
+-   Use column filters/floating filters to narrow displayed records.
+-   Change page size to 10, 20 or 50 rows.
+
+### Payment Timeline --- Bryntum Scheduler
+
+-   Review recorded order, activity and webhook events chronologically.
+-   Use the timeline to understand event ordering and operational
+    history.
+-   Unmatched activity or webhook events remain in separate groups when
+    an exact PayPal order ID association is unavailable.
+-   The timeline is read-only; it does not edit orders or payment state.
+
+### Activity and Webhooks
+
+Use the Activity and Webhooks tabs to inspect recent audit activity and
+webhook event records. The dashboard includes date-range filtering and
+refresh controls.
 
 ------------------------------------------------------------------------
 
 ## API overview
-
-The following routes are part of the application architecture. Confirm
-the exact request and response schemas against the current source before
-publishing external API documentation.
 
   ------------------------------------------------------------------------
   Method                  Route                    Purpose
@@ -390,54 +435,49 @@ publishing external API documentation.
                                                    recent records
   ------------------------------------------------------------------------
 
-The admin endpoints require:
+Admin endpoints require:
 
 ``` http
 Authorization: Bearer YOUR_PAYAGENT_ADMIN_TOKEN
 ```
 
-The admin token must remain private. Do not include it in the README,
-public Postman collection or demo video.
+Keep the admin token private. Do not include it in the README, public
+Postman collection or demo video.
 
 ------------------------------------------------------------------------
 
 ## Suggested judge walkthrough
 
-A concise demonstration should show the complete value proposition
-rather than a collection of disconnected screens.
+1.  **Natural-language request:** ask PayAgent to find a mechanical
+    keyboard within a stated budget and with a specific feature.
+2.  **AI understanding:** show how the assistant turns the request into
+    structured search criteria.
+3.  **Live discovery:** display product images, features, prices and
+    merchant offers returned by Channel3.
+4.  **Refine:** add a maximum budget or preferred merchant.
+5.  **Compare:** show merchant comparison and explain the shared
+    canonical product ID requirement for same-product comparisons.
+6.  **Select:** choose one product and merchant.
+7.  **Re-verify:** explain that the backend checks the current offer
+    again before creating the PayPal order.
+8.  **PayPal approval:** show the customer reviewing and approving the
+    order in PayPal Sandbox.
+9.  **Payment result:** demonstrate the captured payment state and
+    corresponding order record.
+10. **AG Grid:** show sorting, filtering, quick search and pagination on
+    the Orders tab.
+11. **Bryntum:** show the Payment Timeline and explain how recorded
+    order, activity and webhook events appear chronologically.
+12. **Operational accountability:** show Activity and Webhooks records.
 
-### Demo scenario
-
-1.  **Start with a natural request.** Ask PayAgent to find a mechanical
-    keyboard for a stated budget and with a specific feature.
-2.  **Show AI understanding.** Explain how the assistant turns the
-    request into structured search criteria.
-3.  **Show live product discovery.** Display product images, key
-    features, prices and merchant offers returned by Channel3.
-4.  **Refine the request.** Add a follow-up constraint such as a maximum
-    budget or a preferred merchant.
-5.  **Compare offers.** Show merchant comparison and explain that a
-    same-product comparison requires a shared canonical product ID.
-6.  **Select an offer.** Choose one product and merchant.
-7.  **Explain re-verification.** Point out that the backend checks the
-    current offer again before creating the PayPal order.
-8.  **Approve in PayPal Sandbox.** Show the customer reviewing and
-    approving the order on PayPal.
-9.  **Show the payment result.** Demonstrate the captured payment state
-    and corresponding order record.
-10. **Show operational accountability.** Open `/admin` and show the
-    order, activity and webhook records.
-
-Keep the video under three minutes if using it for a hackathon
-submission. Use a fresh Sandbox transaction and remove personal
-information from the recording.
+Keep the public demo video under three minutes. Use a fresh Sandbox
+transaction and remove personal information from the recording.
 
 ------------------------------------------------------------------------
 
 ## Testing and verification
 
-The development work completed so far has included these recorded
-checks:
+Development checks completed to date have included:
 
 -   Product search and merchant comparison using Channel3 data.
 -   Same-product comparison safeguards using canonical product IDs.
@@ -451,6 +491,11 @@ checks:
 -   Admin dashboard summary and recent-record retrieval.
 -   Dashboard date filters for `today`, `7`, `30` and `all`.
 -   A webhook simulator event recorded as `PROCESSED`.
+-   AG Grid Orders table rendering and interaction.
+-   Bryntum Payment Timeline rendering with separate event rows to avoid
+    overlapping labels.
+-   Production build verification after the admin dashboard
+    integrations.
 
 ### Remaining verification before production or final claims
 
@@ -468,8 +513,10 @@ checks:
     database `payment_status` constraint.
 -   Run a full fresh-user journey from chat request to captured Sandbox
     payment.
--   Test the AI with ambiguous product names, budget follow-ups and
-    new-versus-used product preferences.
+-   Test ambiguous product names, budget follow-ups and new-versus-used
+    product preferences.
+-   Verify setup from a fresh clone using only the public repository
+    instructions.
 
 Do not mark a test as passed until it has been executed against the
 current code.
@@ -491,8 +538,6 @@ current code.
     outstanding webhook, idempotency, rate-limit, monitoring and
     payment-reconciliation checks described above.
 
-------------------------------------------------------------------------
-
 ## Responsible use of AI and payments
 
 PayAgent is designed as an assistive commerce agent. It can interpret
@@ -510,25 +555,23 @@ cannot be confirmed.
 
 ## Project links
 
--   **Live demo:** `https://payagent-nine.vercel.app/>`
--   **Source repository:** `<https://github.com/princegyan/payagent-concierge.git>`
->>>>>>> c68bfc4f47aa0247449d28edd32fe8125878284e
--   **Demo video:** `<ADD_PUBLIC_YOUTUBE_URL>`
-
-Replace these placeholders before submission. If no hosted demo is
-available, provide complete setup instructions and a public repository
-that judges can run.
+-   **Live application:** https://payagent-concierge.vercel.app
+-   **Source repository:**
+    https://github.com/princegyan/payagent-concierge
+-   **Demo video:** Add the public YouTube URL here (under 3 minutes).
 
 ## Team
 
 **Project:** PayAgent Concierge\
-<<<<<<< HEAD
-**Team / builder:** `<Alfred Prince Gyan>`\
-**Contact:** `<princealfredgyan@gmail.com>`
+**Builder:** Alfred Prince Gyan\
+**Contact:** princealfredgyan@gmail.com
 
 ## Licence
 
- MIT License 
+This project is released under the MIT License. Include the complete
+`LICENSE` file in the repository root so judges and users can review the
+licence terms.
+
 ------------------------------------------------------------------------
 
 ## A better way to shop
