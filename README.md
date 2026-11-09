@@ -15,7 +15,7 @@ Scheduler
 -   **Live application:** https://payagent-concierge.vercel.app
 -   **Source repository:**
     https://github.com/princegyan/payagent-concierge
--   **Demo video:** Add the public YouTube URL here (under 3 minutes).
+-   **Demo video:** https://youtu.be/OYDg4ffhQho
 
 ------------------------------------------------------------------------
 
@@ -558,7 +558,7 @@ cannot be confirmed.
 -   **Live application:** https://payagent-concierge.vercel.app
 -   **Source repository:**
     https://github.com/princegyan/payagent-concierge
--   **Demo video:** Add the public YouTube URL here (under 3 minutes).
+-   **Demo video:** https://youtu.be/OYDg4ffhQho
 
 ## Team
 
